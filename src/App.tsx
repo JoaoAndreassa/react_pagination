@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import { getNumbers } from './utils';
 import { Pagination } from './components/Pagination/Pagination';
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { useSearchParams } from 'react-router-dom';
 
@@ -18,7 +19,7 @@ export const App: React.FC = () => {
   const currentPage = parseIntWithDefault(searchParams.get('page'), 1);
 
   const totalPages = Math.ceil(total / perPage);
-  const safePage = Math.min(currentPage, totalPages);
+  const safePage = totalPages > 0 ? Math.min(currentPage, totalPages) : 0;
   const start = (safePage - 1) * perPage;
   const end = Math.min(start + perPage, total);
 
@@ -45,7 +46,9 @@ export const App: React.FC = () => {
       <h1>Items with Pagination</h1>
 
       <p className="lead" data-cy="info">
-        Page {safePage} (items {start + 1} - {end} of {total})
+        {total > 0
+          ? `Page ${safePage} (items ${start + 1} - ${end} of ${total})`
+          : 'No items to display'}
       </p>
 
       <div className="form-group row">
@@ -69,20 +72,26 @@ export const App: React.FC = () => {
         </label>
       </div>
 
-      <Pagination
-        total={total}
-        perPage={perPage}
-        currentPage={safePage}
-        onPageChange={handlePageChange}
-      />
+      {total > 0 && (
+        <Pagination
+          total={total}
+          perPage={perPage}
+          currentPage={safePage}
+          onPageChange={handlePageChange}
+        />
+      )}
 
-      <ul>
-        {items.slice(start, end).map(item => (
-          <li key={item} data-cy="item">
-            {item}
-          </li>
-        ))}
-      </ul>
+      {total > 0 ? (
+        <ul>
+          {items.slice(start, end).map(item => (
+            <li key={item} data-cy="item">
+              {item}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-muted">Nenhum item encontrado.</p>
+      )}
     </div>
   );
 };

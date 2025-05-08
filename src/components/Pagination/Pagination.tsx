@@ -14,6 +14,11 @@ export const Pagination: React.FC<Props> = ({
   onPageChange,
 }) => {
   const totalPages = Math.ceil(total / perPage);
+
+  if (totalPages === 0) {
+    return null;
+  }
+
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   const handleClick = (page: number) => {
@@ -48,7 +53,7 @@ export const Pagination: React.FC<Props> = ({
             data-cy="pageLink"
             className="page-link"
             href={`#${page}`}
-            onClick={(e: { preventDefault: () => void }) => {
+            onClick={e => {
               e.preventDefault();
               handleClick(page);
             }}
